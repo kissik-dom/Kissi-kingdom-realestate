@@ -30,7 +30,6 @@ function App() {
 						<Route path="/" element={<LandingPage />} />
 						<Route path="/our-why" element={<OurWhyPage />} />
 						<Route path="/broker-portal" element={<BrokerPortalPage />} />
-						<Route path="/browse" element={<BrowsePage />} />
 						<Route path="/contact" element={<ContactPage />} />
 						<Route element={<PublicOnlyRoute />}>
 							<Route path="/login" element={<LoginPage />} />
@@ -38,11 +37,14 @@ function App() {
 						</Route>
 					</Route>
 
-					{/* Authenticated pages - Agent/Admin dashboards */}
+					{/* Broker portal pages - session-based auth (own layouts) */}
+					<Route path="/browse" element={<BrowsePage />} />
+					<Route path="/dashboard" element={<DashboardPage />} />
+					<Route path="/admin" element={<AdminPage />} />
+
+					{/* Authenticated pages - Convex Auth */}
 					<Route element={<ProtectedRoute />}>
 						<Route element={<AppLayout />}>
-							<Route path="/dashboard" element={<DashboardPage />} />
-							<Route path="/admin" element={<AdminPage />} />
 							<Route path="/settings" element={<SettingsPage />} />
 						</Route>
 					</Route>

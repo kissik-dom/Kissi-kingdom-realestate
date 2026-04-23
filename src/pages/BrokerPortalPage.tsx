@@ -2,10 +2,11 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { ADMIN_ACCESS_CODE } from "@/lib/constants";
 
 export function BrokerPortalPage() {
 	const [code, setCode] = useState("");
@@ -29,9 +30,15 @@ export function BrokerPortalPage() {
 		setTimeout(() => {
 			if (agent) {
 				toast.success(`Welcome, ${agent.name}`);
-				// Store agent session
+				// Store agent session with role
 				sessionStorage.setItem("brokerAgent", JSON.stringify(agent));
-				navigate("/browse");
+
+				// Route based on role
+				if (agent.role === "admin" || code === ADMIN_ACCESS_CODE) {
+					navigate("/admin");
+				} else {
+					navigate("/browse");
+				}
 			} else {
 				toast.error("Invalid access code. Please try again.");
 				setIsVerifying(false);
@@ -73,7 +80,11 @@ export function BrokerPortalPage() {
 								maxLength={6}
 								value={code}
 								onChange={(e) =>
-									setCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+									setCode(
+										e.target.value
+											.replace(/\D/g, "")
+											.slice(0, 6),
+									)
 								}
 								placeholder="000000"
 								className="bg-white/5 border-white/20 text-white text-center text-2xl tracking-[0.5em] py-4 h-14 placeholder:text-gray-600 font-mono focus:border-[#c5972c] focus:ring-[#c5972c]"
@@ -89,8 +100,24 @@ export function BrokerPortalPage() {
 						</Button>
 					</form>
 
+					{/* Admin hint */}
+					<div className="mt-8 border-t border-white/10 pt-6">
+						<div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
+							<Shield className="size-3" />
+							<span className="uppercase tracking-widest">
+								Admin Access
+							</span>
+						</div>
+						<p className="text-xs text-gray-500">
+							Administrators enter their admin access code above to
+							manage agents, assign properties, and oversee the
+							full pipeline.
+						</p>
+					</div>
+
 					<p className="text-xs text-gray-500 mt-6">
-						Access codes are issued by the Kissi Kingdom office. For inquiries:{" "}
+						Access codes are issued by the Kissi Kingdom office. For
+						inquiries:{" "}
 						<a
 							href="mailto:kissikingdomoffice@gmail.com"
 							className="text-[#c5972c] hover:underline"

@@ -149,12 +149,83 @@ export const assignProperty = mutation({
 	},
 	returns: v.id("agentProperties"),
 	handler: async (ctx, args) => {
+		// Check if already assigned
+		const existing = await ctx.db
+			.query("agentProperties")
+			.withIndex("by_agent", (q) => q.eq("agentId", args.agentId))
+			.collect();
+		const alreadyAssigned = existing.find(
+			(a) => a.propertyId === args.propertyId,
+		);
+		if (alreadyAssigned) return alreadyAssigned._id;
+
 		return await ctx.db.insert("agentProperties", {
 			agentId: args.agentId,
 			propertyId: args.propertyId,
 			assignedAt: Date.now(),
 			pipelineStatus: "new",
 		});
+	},
+});
+
+// Bulk assign properties to agent
+export const bulkAssignProperties = mutation({
+	args: {
+		agentId: v.id("agents"),
+		propertyIds: v.array(v.id("properties")),
+	},
+	returns: v.number(),
+	handler: async (ctx, args) => {
+		// Get existing assignments for this agent
+		const existing = await ctx.db
+			.query("agentProperties")
+			.withIndex("by_agent", (q) => q.eq("agentId", args.agentId))
+			.collect();
+		const existingPropIds = new Set(existing.map((a) => a.propertyId));
+
+		let count = 0;
+		for (const propertyId of args.propertyIds) {
+			if (!existingPropIds.has(propertyId)) {
+				await ctx.db.insert("agentProperties", {
+					agentId: args.agentId,
+					propertyId,
+					assignedAt: Date.now(),
+					pipelineStatus: "new",
+				});
+				count++;
+			}
+		}
+		return count;
+	},
+});
+
+// Unassign property from agent
+export const unassignProperty = mutation({
+	args: {
+		agentId: v.id("agents"),
+		propertyId: v.id("properties"),
+	},
+	returns: v.null(),
+	handler: async (ctx, args) => {
+		const assignments = await ctx.db
+			.query("agentProperties")
+			.withIndex("by_agent", (q) => q.eq("agentId", args.agentId))
+			.collect();
+		const match = assignments.find((a) => a.propertyId === args.propertyId);
+		if (match) {
+			// Delete notes first
+			const notes = await ctx.db
+				.query("pipelineNotes")
+				.withIndex("by_agentProperty", (q) =>
+					q.eq("agentPropertyId", match._id),
+				)
+				.collect();
+			for (const n of notes) {
+				await ctx.db.delete(n._id);
+			}
+			await ctx.db.delete(match._id);
+		}
+		return null;
 	},
 });
 
@@ -169,5 +240,18 @@ export const pipelineStats = query({
 			byStatus[a.pipelineStatus] = (byStatus[a.pipelineStatus] || 0) + 1;
 		}
 		return { total: all.length, byStatus };
+	},
+});
+
+// Check which properties are assigned to a given agent (for admin UI to show checkmarks)
+export const getAssignedPropertyIds = query({
+	args: { agentId: v.id("agents") },
+	returns: v.array(v.string()),
+	handler: async (ctx, args) => {
+		const assignments = await ctx.db
+			.query("agentProperties")
+			.withIndex("by_agent", (q) => q.eq("agentId", args.agentId))
+			.collect();
+		return assignments.map((a) => a.propertyId as string);
 	},
 });

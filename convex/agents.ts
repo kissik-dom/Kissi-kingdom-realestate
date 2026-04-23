@@ -51,7 +51,7 @@ export const get = query({
 	},
 });
 
-// Verify broker access code
+// Verify broker access code — returns agent info + role
 export const verifyAccessCode = query({
 	args: { code: v.string() },
 	returns: v.any(),
@@ -66,6 +66,7 @@ export const verifyAccessCode = query({
 			name: agent.name,
 			email: agent.email,
 			role: agent.role,
+			isActive: agent.isActive,
 		};
 	},
 });
@@ -89,6 +90,48 @@ export const create = mutation({
 	},
 });
 
+// Update agent
+export const update = mutation({
+	args: {
+		id: v.id("agents"),
+		name: v.optional(v.string()),
+		email: v.optional(v.string()),
+		phone: v.optional(v.string()),
+		whatsapp: v.optional(v.string()),
+		company: v.optional(v.string()),
+		isActive: v.optional(v.boolean()),
+		role: v.optional(v.string()),
+	},
+	returns: v.null(),
+	handler: async (ctx, args) => {
+		const { id, ...updates } = args;
+		const clean: Record<string, any> = {};
+		for (const [k, val] of Object.entries(updates)) {
+			if (val !== undefined) clean[k] = val;
+		}
+		await ctx.db.patch(id, clean);
+		return null;
+	},
+});
+
+// Delete agent
+export const remove = mutation({
+	args: { id: v.id("agents") },
+	returns: v.null(),
+	handler: async (ctx, args) => {
+		// Also remove all assignments for this agent
+		const assignments = await ctx.db
+			.query("agentProperties")
+			.withIndex("by_agent", (q) => q.eq("agentId", args.id))
+			.collect();
+		for (const a of assignments) {
+			await ctx.db.delete(a._id);
+		}
+		await ctx.db.delete(args.id);
+		return null;
+	},
+});
+
 // Get agent stats
 export const stats = query({
 	args: {},
@@ -102,5 +145,27 @@ export const stats = query({
 			totalAgents: agents.length,
 			activeAgents: agents.filter((a) => a.isActive).length,
 		};
+	},
+});
+
+// Get agent with their assignment count
+export const listWithCounts = query({
+	args: {},
+	returns: v.array(v.any()),
+	handler: async (ctx) => {
+		const agents = await ctx.db.query("agents").collect();
+		const result = await Promise.all(
+			agents.map(async (agent) => {
+				const assignments = await ctx.db
+					.query("agentProperties")
+					.withIndex("by_agent", (q) => q.eq("agentId", agent._id))
+					.collect();
+				return {
+					...agent,
+					assignmentCount: assignments.length,
+				};
+			}),
+		);
+		return result;
 	},
 });

@@ -40,4 +40,9 @@ export const PROPERTY_TYPES = [
 	{ value: "mineral", label: "Mineral" },
 	{ value: "arena", label: "Arena" },
 	{ value: "apartment_complex", label: "Apartment Complex" },
+	{ value: "estate", label: "Estate" },
+	{ value: "oceanfront", label: "Oceanfront" },
+	{ value: "island", label: "Island" },
 ] as const;
+
+export const ADMIN_ACCESS_CODE = "999999";
