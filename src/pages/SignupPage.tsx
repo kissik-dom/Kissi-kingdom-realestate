@@ -13,14 +13,14 @@ export function SignupPage() {
 
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center space-y-2">
-          <div className="mx-auto size-12 rounded-xl bg-primary flex items-center justify-center mb-4">
-            <span className="text-primary-foreground font-bold text-lg">M</span>
+          <div className="mx-auto size-12 rounded-full bg-gradient-to-b from-[#c5972c] to-[#a67c1e] flex items-center justify-center mb-4">
+            <span className="text-xl">👑</span>
           </div>
           <h1 className="text-2xl font-bold tracking-tight">
-            Create an account
+            Join Kissi Kingdom
           </h1>
           <p className="text-muted-foreground text-sm">
-            Get started with your free account
+            Create your agent portal account
           </p>
         </div>
 

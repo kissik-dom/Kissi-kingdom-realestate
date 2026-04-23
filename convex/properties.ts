@@ -198,3 +198,47 @@ export const create = mutation({
 		return await ctx.db.insert("properties", args);
 	},
 });
+
+// Bulk create properties (up to 100 at a time)
+export const bulkCreate = mutation({
+	args: {
+		properties: v.array(v.object({
+			title: v.string(),
+			description: v.string(),
+			price: v.optional(v.number()),
+			priceLabel: v.optional(v.string()),
+			currency: v.string(),
+			country: v.string(),
+			city: v.string(),
+			state: v.optional(v.string()),
+			address: v.optional(v.string()),
+			category: v.string(),
+			propertyType: v.string(),
+			subcategory: v.optional(v.string()),
+			acreage: v.optional(v.number()),
+			squareFeet: v.optional(v.number()),
+			stories: v.optional(v.number()),
+			parcels: v.optional(v.number()),
+			bedrooms: v.optional(v.number()),
+			bathrooms: v.optional(v.number()),
+			imageUrl: v.optional(v.string()),
+			imageUrls: v.optional(v.array(v.string())),
+			listingUrl: v.optional(v.string()),
+			brokerName: v.optional(v.string()),
+			brokerEmail: v.optional(v.string()),
+			brokerPhone: v.optional(v.string()),
+			brokerCompany: v.optional(v.string()),
+			status: v.string(),
+			isVerified: v.boolean(),
+		})),
+	},
+	returns: v.number(),
+	handler: async (ctx, args) => {
+		let count = 0;
+		for (const prop of args.properties) {
+			await ctx.db.insert("properties", prop);
+			count++;
+		}
+		return count;
+	},
+});

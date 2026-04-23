@@ -4,5 +4,8 @@
       "source": "/((?!assets/).*)",
       "destination": "/index.html"
     }
-  ]
+  ],
+  "toolbar": {
+    "enabled": false
+  }
 }
