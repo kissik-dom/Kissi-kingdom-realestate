@@ -4,188 +4,201 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-success: var(--success);
-  --color-success-foreground: var(--success-foreground);
-  --color-warning: var(--warning);
-  --color-warning-foreground: var(--warning-foreground);
-  --color-info: var(--info);
-  --color-info-foreground: var(--info-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+	--radius-sm: calc(var(--radius) - 4px);
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) + 4px);
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-card: var(--card);
+	--color-card-foreground: var(--card-foreground);
+	--color-popover: var(--popover);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-secondary: var(--secondary);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-accent: var(--accent);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-destructive: var(--destructive);
+	--color-destructive-foreground: var(--destructive-foreground);
+	--color-success: var(--success);
+	--color-success-foreground: var(--success-foreground);
+	--color-warning: var(--warning);
+	--color-warning-foreground: var(--warning-foreground);
+	--color-info: var(--info);
+	--color-info-foreground: var(--info-foreground);
+	--color-border: var(--border);
+	--color-input: var(--input);
+	--color-ring: var(--ring);
+	--color-chart-1: var(--chart-1);
+	--color-chart-2: var(--chart-2);
+	--color-chart-3: var(--chart-3);
+	--color-chart-4: var(--chart-4);
+	--color-chart-5: var(--chart-5);
+	--color-sidebar: var(--sidebar);
+	--color-sidebar-foreground: var(--sidebar-foreground);
+	--color-sidebar-primary: var(--sidebar-primary);
+	--color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+	--color-sidebar-accent: var(--sidebar-accent);
+	--color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+	--color-sidebar-border: var(--sidebar-border);
+	--color-sidebar-ring: var(--sidebar-ring);
+
+	/* Kissi Kingdom brand colors */
+	--color-navy: #0f1d3a;
+	--color-navy-light: #162850;
+	--color-navy-dark: #0a1428;
+	--color-gold: #c5972c;
+	--color-gold-light: #d4a94a;
+	--color-gold-dark: #a67c1e;
+	--color-cream: #f5f0e8;
 }
 
 :root {
-  --sidebar-width: 16rem;
-  --sidebar-width-icon: 3rem;
+	--sidebar-width: 16rem;
+	--sidebar-width-icon: 3rem;
 
-  --primary: var(--color-slate-900);
-  --primary-foreground: var(--color-white);
-  --sidebar-primary: var(--color-slate-900);
-  --sidebar-primary-foreground: var(--color-slate-50);
+	/* Kissi Kingdom theme: Navy + Gold */
+	--primary: #0f1d3a;
+	--primary-foreground: #ffffff;
+	--sidebar-primary: #0f1d3a;
+	--sidebar-primary-foreground: #f5f0e8;
 
-  --success: var(--color-emerald-600);
-  --success-foreground: var(--color-white);
-  --warning: var(--color-amber-500);
-  --warning-foreground: var(--color-amber-950);
-  --info: var(--color-cyan-500);
-  --info-foreground: var(--color-white);
+	--success: #16a34a;
+	--success-foreground: #ffffff;
+	--warning: #c5972c;
+	--warning-foreground: #0f1d3a;
+	--info: #0891b2;
+	--info-foreground: #ffffff;
 
-  --chart-1: var(--color-teal-500);
-  --chart-2: var(--color-orange-500);
-  --chart-3: var(--color-cyan-500);
-  --chart-4: var(--color-rose-500);
-  --chart-5: var(--color-lime-500);
+	--chart-1: #c5972c;
+	--chart-2: #0891b2;
+	--chart-3: #16a34a;
+	--chart-4: #dc2626;
+	--chart-5: #7c3aed;
 
-  --radius: 0.625rem;
-  --background: oklch(0.985 0 0);
-  --foreground: oklch(0.15 0.01 260);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0.01 260);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.01 260);
-  --secondary: oklch(0.96 0.005 260);
-  --secondary-foreground: oklch(0.3 0.01 260);
-  --muted: oklch(0.96 0.005 260);
-  --muted-foreground: oklch(0.45 0.015 260);
-  --accent: oklch(0.96 0.005 260);
-  --accent-foreground: oklch(0.15 0.01 260);
-  --destructive: oklch(0.55 0.22 25);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.92 0.005 260);
-  --input: oklch(0.92 0.005 260);
-  --ring: oklch(0.3 0.02 260);
-  --sidebar: oklch(0.98 0 0);
-  --sidebar-foreground: oklch(0.15 0.01 260);
-  --sidebar-accent: oklch(0.96 0.005 260);
-  --sidebar-accent-foreground: oklch(0.15 0.01 260);
-  --sidebar-border: oklch(0.92 0.005 260);
-  --sidebar-ring: oklch(0.3 0.02 260);
+	--radius: 0.5rem;
+	--background: #fafaf8;
+	--foreground: #0f1d3a;
+	--card: #ffffff;
+	--card-foreground: #0f1d3a;
+	--popover: #ffffff;
+	--popover-foreground: #0f1d3a;
+	--secondary: #f0ebe3;
+	--secondary-foreground: #0f1d3a;
+	--muted: #f0ebe3;
+	--muted-foreground: #5a6478;
+	--accent: #f0ebe3;
+	--accent-foreground: #0f1d3a;
+	--destructive: #dc2626;
+	--destructive-foreground: #ffffff;
+	--border: #e0d8cc;
+	--input: #e0d8cc;
+	--ring: #c5972c;
+
+	--sidebar: #0f1d3a;
+	--sidebar-foreground: #e8e0d4;
+	--sidebar-accent: #162850;
+	--sidebar-accent-foreground: #f5f0e8;
+	--sidebar-border: #1e3460;
+	--sidebar-ring: #c5972c;
 }
 
 .dark {
-  --primary: var(--color-white);
-  --primary-foreground: var(--color-slate-900);
-  --sidebar-primary: var(--color-white);
-  --sidebar-primary-foreground: var(--color-slate-900);
-
-  --success: var(--color-emerald-400);
-  --success-foreground: var(--color-emerald-950);
-  --warning: var(--color-amber-400);
-  --warning-foreground: var(--color-amber-950);
-  --info: var(--color-cyan-400);
-  --info-foreground: var(--color-cyan-950);
-
-  --chart-1: var(--color-teal-400);
-  --chart-2: var(--color-orange-400);
-  --chart-3: var(--color-cyan-400);
-  --chart-4: var(--color-rose-400);
-  --chart-5: var(--color-lime-400);
-
-  --background: oklch(0.12 0.01 260);
-  --foreground: oklch(0.95 0.005 260);
-  --card: oklch(0.16 0.01 260);
-  --card-foreground: oklch(0.95 0.005 260);
-  --popover: oklch(0.16 0.01 260);
-  --popover-foreground: oklch(0.95 0.005 260);
-  --secondary: oklch(0.22 0.01 260);
-  --secondary-foreground: oklch(0.9 0.005 260);
-  --muted: oklch(0.22 0.01 260);
-  --muted-foreground: oklch(0.6 0.01 260);
-  --accent: oklch(0.22 0.01 260);
-  --accent-foreground: oklch(0.95 0.005 260);
-  --destructive: oklch(0.6 0.2 25);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.9 0.01 260);
-  --sidebar: oklch(0.14 0.01 260);
-  --sidebar-foreground: oklch(0.95 0.005 260);
-  --sidebar-accent: oklch(0.22 0.01 260);
-  --sidebar-accent-foreground: oklch(0.95 0.005 260);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.9 0.01 260);
+	--background: #0a1020;
+	--foreground: #f5f0e8;
+	--card: #0f1d3a;
+	--card-foreground: #f5f0e8;
+	--popover: #0f1d3a;
+	--popover-foreground: #f5f0e8;
+	--secondary: #162850;
+	--secondary-foreground: #f5f0e8;
+	--muted: #162850;
+	--muted-foreground: #8b95a8;
+	--accent: #162850;
+	--accent-foreground: #f5f0e8;
+	--destructive: #dc2626;
+	--destructive-foreground: #ffffff;
+	--border: #1e3460;
+	--input: #1e3460;
+	--ring: #c5972c;
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-  button:not(:disabled),
-  [role="button"]:not([aria-disabled="true"]),
-  [type="button"]:not(:disabled),
-  [type="submit"]:not(:disabled),
-  [type="reset"]:not(:disabled),
-  a[href],
-  select:not(:disabled),
-  input[type="checkbox"]:not(:disabled),
-  input[type="radio"]:not(:disabled) {
-    @apply cursor-pointer;
-  }
+	* {
+		@apply border-border;
+	}
+	body {
+		@apply bg-background text-foreground;
+		font-family: "Inter", system-ui, sans-serif;
+	}
 }
 
-@layer components {
-  .container {
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
+/* Custom container */
+.container {
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
 
-  .flex {
-    min-height: 0;
-    min-width: 0;
-  }
+@media (min-width: 640px) {
+	.container {
+		max-width: 640px;
+		padding-left: 1.5rem;
+		padding-right: 1.5rem;
+	}
+}
 
-  @media (min-width: 640px) {
-    .container {
-      padding-left: 1.5rem;
-      padding-right: 1.5rem;
-    }
-  }
+@media (min-width: 768px) {
+	.container {
+		max-width: 768px;
+	}
+}
 
-  @media (min-width: 1024px) {
-    .container {
-      padding-left: 2rem;
-      padding-right: 2rem;
-      max-width: 1280px;
-    }
-  }
+@media (min-width: 1024px) {
+	.container {
+		max-width: 1024px;
+	}
+}
+
+@media (min-width: 1280px) {
+	.container {
+		max-width: 1280px;
+	}
+}
+
+/* Kissi Kingdom special styles */
+.kissi-gradient {
+	background: linear-gradient(180deg, #0a1428 0%, #0f1d3a 30%, #162850 100%);
+}
+
+.gold-text {
+	color: #c5972c;
+}
+
+.gold-border {
+	border-color: #c5972c;
+}
+
+/* Elegant scrollbar */
+::-webkit-scrollbar {
+	width: 6px;
+}
+::-webkit-scrollbar-track {
+	background: #0f1d3a;
+}
+::-webkit-scrollbar-thumb {
+	background: #c5972c;
+	border-radius: 3px;
+}
+
+/* Flex defaults */
+.flex {
+	min-width: 0;
+	min-height: 0;
 }

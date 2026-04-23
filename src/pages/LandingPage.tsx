@@ -1,190 +1,197 @@
-import { useConvexAuth } from "convex/react";
-import {
-  ArrowRight,
-  Check,
-  Layers,
-  Shield,
-  Sparkles,
-  Star,
-  Zap,
-} from "lucide-react";
 import { Link } from "react-router-dom";
+import { ArrowRight, Lock, Globe, Scale, Building, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function LandingPage() {
-  const { isAuthenticated, isLoading } = useConvexAuth();
+	return (
+		<div className="flex-1 flex flex-col overflow-hidden bg-[#fafaf8]">
+			{/* Hero Section */}
+			<section className="kissi-gradient text-white py-20 md:py-32 px-4">
+				<div className="max-w-4xl mx-auto text-center space-y-6">
+					{/* Crest */}
+					<div className="flex justify-center mb-4">
+						<div className="w-20 h-20 rounded-full bg-gradient-to-b from-[#c5972c] to-[#a67c1e] flex items-center justify-center shadow-lg shadow-[#c5972c]/20">
+							<span className="text-3xl">👑</span>
+						</div>
+					</div>
 
-  return (
-    <div className="flex-1 flex flex-col overflow-hidden">
-      <section className="relative flex-1 flex flex-col items-center justify-center px-4 py-16 md:py-24">
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border))_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border))_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-40" />
-        </div>
+					<p className="text-xs md:text-sm tracking-[0.3em] uppercase text-[#c5972c] font-medium">
+						Sovereign Authority of the Royal House of Kissi™
+					</p>
 
-        <div className="max-w-5xl mx-auto text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border bg-background text-xs font-medium">
-            <Star className="size-3 fill-chart-4 text-chart-4" />
-            Badge Text Goes Here
-          </div>
+					<h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.1]">
+						Global Real Estate
+						<br />
+						<span className="text-[#c5972c]">Portfolio Management</span>
+					</h1>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1]">
-            This is the
-            <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-foreground via-foreground/80 to-foreground/60">
-              Main Headline
-            </span>
-          </h1>
+					<p className="text-base md:text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
+						A secure platform for authorized brokers and agents managing
+						properties on behalf of the Royal World Trust, backed by the Kissi
+						Kingdom Sovereign Wealth Fund.
+					</p>
 
-          <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            This is the subheadline that explains what the product does and why
-            it matters. Keep it concise and compelling.
-          </p>
+					<div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+						<Link to="/our-why">
+							<Button className="bg-[#c5972c] hover:bg-[#d4a94a] text-white px-8 py-3 text-base font-medium rounded">
+								Our Why <ArrowRight className="ml-2 size-4" />
+							</Button>
+						</Link>
+						<Link to="/broker-portal">
+							<Button
+								variant="outline"
+								className="border-white/30 text-white hover:bg-white/10 px-8 py-3 text-base font-medium rounded bg-transparent"
+							>
+								Broker Portal
+							</Button>
+						</Link>
+					</div>
+				</div>
+			</section>
 
-          {!isAuthenticated && !isLoading && (
-            <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-              <Button size="lg" className="text-base h-11 px-6" asChild>
-                <Link to="/signup">
-                  Get Started
-                  <ArrowRight className="size-4" />
-                </Link>
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="text-base h-11 px-6"
-                asChild
-              >
-                <Link to="/login">Sign In</Link>
-              </Button>
-            </div>
-          )}
-          {isAuthenticated && (
-            <div className="pt-2">
-              <Button size="lg" className="text-base h-11 px-6" asChild>
-                <Link to="/dashboard">
-                  Go to Dashboard
-                  <ArrowRight className="size-4" />
-                </Link>
-              </Button>
-            </div>
-          )}
+			{/* Stats Bar */}
+			<section className="bg-[#0a1428] border-t border-[#1e3460] py-8 px-4">
+				<div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+					{[
+						{ value: "2,100+", label: "PROPERTIES" },
+						{ value: "164", label: "COUNTRIES" },
+						{ value: "7", label: "ASSET CLASSES" },
+						{ value: "24/7", label: "PORTAL ACCESS" },
+					].map((stat) => (
+						<div key={stat.label}>
+							<div className="text-2xl md:text-3xl font-bold text-[#c5972c]">
+								{stat.value}
+							</div>
+							<div className="text-xs tracking-[0.15em] text-gray-400 mt-1">
+								{stat.label}
+							</div>
+						</div>
+					))}
+				</div>
+			</section>
 
-          <div className="flex items-center justify-center gap-6 pt-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1.5">
-              <Check className="size-4 text-chart-1" />
-              <span>Benefit one</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Check className="size-4 text-chart-1" />
-              <span>Benefit two</span>
-            </div>
-            <div className="hidden sm:flex items-center gap-1.5">
-              <Check className="size-4 text-chart-1" />
-              <span>Benefit three</span>
-            </div>
-          </div>
-        </div>
-      </section>
+			{/* Our Foundation */}
+			<section className="py-16 md:py-24 px-4 bg-[#fafaf8]">
+				<div className="max-w-5xl mx-auto">
+					<div className="text-center mb-12">
+						<p className="text-xs tracking-[0.3em] uppercase text-[#c5972c] font-medium mb-3">
+							OUR FOUNDATION
+						</p>
+						<h2 className="text-3xl md:text-4xl font-bold text-[#0f1d3a]">
+							Built on Integrity & Excellence
+						</h2>
+					</div>
 
-      <section className="py-20 md:py-32 border-t bg-muted/30">
-        <div className="container">
-          <div className="text-center mb-16">
-            <p className="text-sm font-medium text-muted-foreground mb-3 tracking-wide uppercase">
-              Features
-            </p>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Features Section Title
-            </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto text-lg">
-              A brief description of what makes this product special and why
-              users should care about these features.
-            </p>
-          </div>
+					<div className="grid md:grid-cols-3 gap-6">
+						{[
+							{
+								icon: <Lock className="size-7 text-[#c5972c]" />,
+								title: "Confidential & Secure",
+								desc: "Every broker operates within an isolated portal. No cross-visibility. All access governed by NDA and strict confidentiality protocols.",
+							},
+							{
+								icon: <Globe className="size-7 text-[#c5972c]" />,
+								title: "Global Portfolio",
+								desc: "Properties spanning 164 countries — ocean view estates, farmland, wineries, mineral rights, and luxury holdings curated for the Royal World Trust.",
+							},
+							{
+								icon: <Scale className="size-7 text-[#c5972c]" />,
+								title: "Attorney Oversight",
+								desc: "All transactions are conducted under the oversight of Timothy Daniel, Esq., Ohio Bar No. 18978, Civil Securities.",
+							},
+						].map((card) => (
+							<div
+								key={card.title}
+								className="bg-white border border-[#e0d8cc] rounded-lg p-8 text-center hover:shadow-lg transition-shadow"
+							>
+								<div className="w-14 h-14 rounded-lg bg-[#0f1d3a] flex items-center justify-center mx-auto mb-5">
+									{card.icon}
+								</div>
+								<h3 className="text-lg font-semibold text-[#0f1d3a] mb-3">
+									{card.title}
+								</h3>
+								<p className="text-sm text-gray-600 leading-relaxed">
+									{card.desc}
+								</p>
+							</div>
+						))}
+					</div>
+				</div>
+			</section>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
-            <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-background to-muted/50 border p-6 md:p-8 transition-all hover:shadow-lg hover:border-foreground/20">
-              <div className="absolute top-0 right-0 -mt-4 -mr-4 size-24 rounded-full bg-chart-1/10 blur-2xl transition-all group-hover:bg-chart-1/20" />
-              <div className="relative">
-                <div className="inline-flex size-11 items-center justify-center rounded-xl bg-chart-1/10 mb-5">
-                  <Zap className="size-5 text-chart-1" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">Feature One</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  Here we describe the first key feature. It solves a specific
-                  problem for users.
-                </p>
-              </div>
-            </div>
+			{/* Property Categories Preview */}
+			<section className="py-16 md:py-24 px-4 bg-white">
+				<div className="max-w-5xl mx-auto">
+					<div className="text-center mb-12">
+						<p className="text-xs tracking-[0.3em] uppercase text-[#c5972c] font-medium mb-3">
+							PORTFOLIO
+						</p>
+						<h2 className="text-3xl md:text-4xl font-bold text-[#0f1d3a]">
+							Asset Categories
+						</h2>
+					</div>
 
-            <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-background to-muted/50 border p-6 md:p-8 transition-all hover:shadow-lg hover:border-foreground/20">
-              <div className="absolute top-0 right-0 -mt-4 -mr-4 size-24 rounded-full bg-chart-2/10 blur-2xl transition-all group-hover:bg-chart-2/20" />
-              <div className="relative">
-                <div className="inline-flex size-11 items-center justify-center rounded-xl bg-chart-2/10 mb-5">
-                  <Shield className="size-5 text-chart-2" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">Feature Two</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  This is where we explain the second feature. It complements
-                  the first one.
-                </p>
-              </div>
-            </div>
+					<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+						{[
+							{ icon: "🏛️", label: "Ivy League Schools" },
+							{ icon: "🌍", label: "International Cities" },
+							{ icon: "💎", label: "Precious Minerals" },
+							{ icon: "🍷", label: "Wineries" },
+							{ icon: "🌾", label: "Large-Scale Farms" },
+							{ icon: "🐄", label: "Cattle Farms" },
+							{ icon: "🥭", label: "Specialty Farms" },
+							{ icon: "🏢", label: "NYC Commercial" },
+							{ icon: "🏬", label: "Apartment Complexes" },
+							{ icon: "🎓", label: "HBCU Properties" },
+							{ icon: "🏟️", label: "Arenas & Stadiums" },
+							{ icon: "🏈", label: "NBA/NFL Land" },
+						].map((cat) => (
+							<Link
+								key={cat.label}
+								to="/broker-portal"
+								className="group bg-[#fafaf8] border border-[#e0d8cc] rounded-lg p-5 text-center hover:border-[#c5972c] hover:shadow-md transition-all"
+							>
+								<div className="text-3xl mb-3">{cat.icon}</div>
+								<div className="text-sm font-medium text-[#0f1d3a] group-hover:text-[#c5972c] transition-colors">
+									{cat.label}
+								</div>
+							</Link>
+						))}
+					</div>
+				</div>
+			</section>
 
-            <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-background to-muted/50 border p-6 md:p-8 transition-all hover:shadow-lg hover:border-foreground/20">
-              <div className="absolute top-0 right-0 -mt-4 -mr-4 size-24 rounded-full bg-chart-3/10 blur-2xl transition-all group-hover:bg-chart-3/20" />
-              <div className="relative">
-                <div className="inline-flex size-11 items-center justify-center rounded-xl bg-chart-3/10 mb-5">
-                  <Sparkles className="size-5 text-chart-3" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">Feature Three</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  The third feature rounds out the offering. Together they
-                  create a solution.
-                </p>
-              </div>
-            </div>
+			{/* Contact Section */}
+			<section className="kissi-gradient text-white py-16 md:py-24 px-4">
+				<div className="max-w-4xl mx-auto text-center space-y-8">
+					<p className="text-xs tracking-[0.3em] uppercase text-[#c5972c] font-medium">
+						CONTACT
+					</p>
+					<h2 className="text-3xl md:text-4xl font-bold">Get in Touch</h2>
+					<p className="text-gray-300 max-w-xl mx-auto">
+						For inquiries about the Kissi Kingdom portfolio or broker access,
+						contact our office.
+					</p>
+					<div className="flex flex-wrap justify-center gap-8 pt-4">
+						<div className="flex items-center gap-3">
+							<Mail className="size-5 text-[#c5972c]" />
+							<span className="text-sm">kissikingdomoffice@gmail.com</span>
+						</div>
+						<div className="flex items-center gap-3">
+							<Building className="size-5 text-[#c5972c]" />
+							<span className="text-sm">Civil Securities LLC</span>
+						</div>
+					</div>
+				</div>
+			</section>
 
-            <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-background to-muted/50 border p-6 md:p-8 md:col-span-2 lg:col-span-2 transition-all hover:shadow-lg hover:border-foreground/20">
-              <div className="absolute bottom-0 left-0 -mb-8 -ml-8 size-32 rounded-full bg-chart-4/10 blur-2xl transition-all group-hover:bg-chart-4/20" />
-              <div className="relative flex flex-col md:flex-row md:items-center gap-6">
-                <div className="inline-flex size-14 shrink-0 items-center justify-center rounded-2xl bg-chart-4/10">
-                  <Layers className="size-7 text-chart-4" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg mb-2">
-                    Feature Four - A Bigger Highlight
-                  </h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    This larger card can highlight a key differentiator or main
-                    value proposition. Use this space to elaborate on what makes
-                    your product stand out.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="group relative overflow-hidden rounded-2xl bg-primary text-primary-foreground p-6 md:p-8 transition-all hover:shadow-lg">
-              <div className="relative">
-                <h3 className="font-semibold text-lg mb-2">Ready to start?</h3>
-                <p className="text-primary-foreground/80 text-sm leading-relaxed mb-4">
-                  Join thousands of users already using our platform.
-                </p>
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  className="bg-background text-foreground hover:bg-background/90"
-                  asChild
-                >
-                  <Link to="/signup">
-                    Get Started
-                    <ArrowRight className="size-4" />
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
+			{/* Footer */}
+			<footer className="bg-[#0a1428] text-gray-400 py-8 px-4 text-center text-xs">
+				<p>
+					© {new Date().getFullYear()} Kissi Kingdom — Sovereign Authority of
+					the Royal House of Kissi™. All rights reserved.
+				</p>
+			</footer>
+		</div>
+	);
 }

@@ -3,3 +3,8 @@ export { LandingPage } from "./LandingPage";
 export { LoginPage } from "./LoginPage";
 export { SettingsPage } from "./SettingsPage";
 export { SignupPage } from "./SignupPage";
+export { OurWhyPage } from "./OurWhyPage";
+export { BrokerPortalPage } from "./BrokerPortalPage";
+export { BrowsePage } from "./BrowsePage";
+export { AdminPage } from "./AdminPage";
+export { ContactPage } from "./ContactPage";
