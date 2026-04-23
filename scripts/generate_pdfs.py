@@ -1,32 +1,46 @@
-"""Generate property catalog PDFs separated by category, country, city, and type."""
-
+"""Generate property PDFs organized by category, country, and property type."""
 import json
 import os
-import sys
-import subprocess
-from collections import defaultdict
+import asyncio
 
-# Query properties from Convex dev database
-def get_properties():
-    """Load properties from pre-fetched JSON file."""
-    with open("/tmp/properties.json") as f:
-        return json.load(f)
+# We'll generate HTML and convert to PDF
+from weasyprint import HTML
 
+PDF_DIR = "/work/temp/pdfs"
+os.makedirs(PDF_DIR, exist_ok=True)
 
 CATEGORY_LABELS = {
-    "ivy_league": "Ivy League Properties",
-    "international": "International Cities",
-    "minerals": "Precious Minerals & Mining Rights",
+    "ivy_league": "Ivy League & Ivy Plus Schools",
+    "international": "International Top Cities",
+    "minerals": "Precious Minerals",
     "wineries": "Wineries & Vineyards",
-    "farms_large": "Large Farms & Agricultural Land",
-    "farms_cattle": "Cattle Farms & Ranches",
-    "farms_specialty": "Specialty Farms",
-    "nyc_commercial": "NYC Commercial Properties",
-    "nyc_apartments": "NYC Apartment Complexes",
+    "farms_large": "Large-Scale Farms",
+    "farms_cattle": "Cattle Farms",
+    "farms_specialty": "Specialty Fruit & Spice Farms",
+    "nyc_commercial": "NYC & NJ Commercial",
+    "nyc_apartments": "NYC & Brooklyn Apartments",
     "hbcu": "HBCU Properties",
-    "arenas": "Arenas & Entertainment Venues",
-    "nba_nfl_land": "NBA/NFL Adjacent Land",
+    "arenas": "Arenas & Venues",
+    "nba_nfl_land": "NBA/NFL City Land",
 }
+
+CSS = """
+@page { size: A4 landscape; margin: 1.5cm; }
+body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 9px; color: #1a1a2e; }
+h1 { color: #c5972c; font-size: 18px; border-bottom: 2px solid #c5972c; padding-bottom: 5px; margin-bottom: 10px; }
+h2 { color: #0f1d3a; font-size: 14px; margin: 15px 0 5px; }
+.subtitle { color: #666; font-size: 11px; margin-bottom: 15px; }
+.crown { font-size: 14px; }
+table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+th { background: #0f1d3a; color: #c5972c; padding: 5px 4px; text-align: left; font-size: 8px; text-transform: uppercase; }
+td { padding: 4px; border-bottom: 1px solid #e0e0e0; font-size: 8px; vertical-align: top; }
+tr:nth-child(even) { background: #f8f8fc; }
+.footer { margin-top: 20px; padding-top: 10px; border-top: 1px solid #c5972c; font-size: 8px; color: #666; text-align: center; }
+.stats { background: #0f1d3a; color: white; padding: 8px 15px; border-radius: 5px; margin-bottom: 15px; display: flex; }
+.stat { margin-right: 30px; }
+.stat-num { color: #c5972c; font-weight: bold; font-size: 14px; }
+.stat-label { font-size: 9px; }
+"""
 
 def format_price(prop):
     if prop.get("priceLabel"):
@@ -34,284 +48,135 @@ def format_price(prop):
     if prop.get("price"):
         p = prop["price"]
         if p >= 1_000_000:
-            return f"${p/1_000_000:.1f}M {prop.get('currency', 'USD')}"
+            return f"${p/1_000_000:,.1f}M"
         elif p >= 1_000:
-            return f"${p/1_000:.0f}K {prop.get('currency', 'USD')}"
-        return f"${p:,.0f} {prop.get('currency', 'USD')}"
+            return f"${p:,.0f}"
+        return f"${p:,.2f}"
     return "Contact for Price"
 
-def generate_html(title, subtitle, properties):
+def make_table_rows(props):
     rows = ""
-    for i, p in enumerate(properties):
-        bg = "#f9f8f5" if i % 2 == 0 else "#ffffff"
-        details = []
-        if p.get("acreage"): details.append(f"{p['acreage']} acres")
-        if p.get("squareFeet"): details.append(f"{p['squareFeet']:,} sq ft")
-        if p.get("stories"): details.append(f"{p['stories']} stories")
-        if p.get("bedrooms"): details.append(f"{p['bedrooms']} bed")
-        if p.get("bathrooms"): details.append(f"{p['bathrooms']} bath")
-        detail_str = " · ".join(details) if details else "—"
-        
-        status_colors = {
-            "available": "#2e7d32",
-            "pending": "#f9a825",
-            "sold": "#c62828",
-            "off_market": "#757575",
-        }
-        status = p.get("status", "available")
-        status_color = status_colors.get(status, "#757575")
-        
-        rows += f"""
-        <tr style="background: {bg};">
-            <td style="padding: 10px 12px; border-bottom: 1px solid #e8e3d9; font-weight: 600; color: #0f1d3a; font-size: 11px; max-width: 200px;">{p.get('title', 'N/A')}</td>
-            <td style="padding: 10px 8px; border-bottom: 1px solid #e8e3d9; font-size: 10px; color: #555;">{p.get('city', '')}, {p.get('country', '')}</td>
-            <td style="padding: 10px 8px; border-bottom: 1px solid #e8e3d9; font-size: 10px; color: #555;">{p.get('propertyType', '').replace('_', ' ').title()}</td>
-            <td style="padding: 10px 8px; border-bottom: 1px solid #e8e3d9; font-size: 10px; color: #555;">{detail_str}</td>
-            <td style="padding: 10px 8px; border-bottom: 1px solid #e8e3d9; font-size: 11px; font-weight: 600; color: #c5972c;">{format_price(p)}</td>
-            <td style="padding: 10px 8px; border-bottom: 1px solid #e8e3d9;">
-                <span style="display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 9px; font-weight: 600; color: white; background: {status_color}; text-transform: uppercase;">{status}</span>
-            </td>
-        </tr>
-        """
-    
-    # Group by country for summary
-    by_country = defaultdict(int)
-    by_type = defaultdict(int)
-    for p in properties:
-        by_country[p.get("country", "Unknown")] += 1
-        by_type[p.get("propertyType", "Unknown")] += 1
-    
-    country_summary = ", ".join(f"{c} ({n})" for c, n in sorted(by_country.items()))
-    type_summary = ", ".join(f"{t.replace('_', ' ').title()} ({n})" for t, n in sorted(by_type.items()))
+    for i, p in enumerate(props[:500]):  # Max 500 per PDF
+        rows += f"""<tr>
+            <td>{i+1}</td>
+            <td><b>{p.get('title', 'N/A')}</b></td>
+            <td>{p.get('propertyType', 'N/A').title()}</td>
+            <td>{format_price(p)}</td>
+            <td>{p.get('country', 'N/A')}</td>
+            <td>{p.get('city', 'N/A')}</td>
+            <td>{p.get('state', '') or ''}</td>
+            <td>{f"{p['acreage']:,.1f} ac" if p.get('acreage') else ''}</td>
+            <td>{p.get('brokerName', '') or ''}</td>
+            <td>{p.get('brokerEmail', '') or ''}</td>
+            <td>{'✓' if p.get('isVerified') else '○'}</td>
+        </tr>"""
+    return rows
+
+def make_html(title, subtitle, props, category_label=""):
+    countries = len(set(p.get("country", "") for p in props))
+    verified = sum(1 for p in props if p.get("isVerified"))
     
     return f"""<!DOCTYPE html>
 <html>
-<head>
-<meta charset="utf-8">
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-@page {{
-    size: A4 landscape;
-    margin: 15mm 15mm 20mm 15mm;
-    @bottom-center {{
-        content: "CONFIDENTIAL — Kissi Kingdom Sovereign Wealth Fund  |  Page " counter(page) " of " counter(pages);
-        font-size: 7px;
-        color: #999;
-        font-family: 'Inter', 'Roboto', sans-serif;
-    }}
-}}
-body {{
-    font-family: 'Inter', 'Roboto', sans-serif;
-    margin: 0;
-    color: #333;
-    line-height: 1.4;
-}}
-.header {{
-    background: linear-gradient(135deg, #0f1d3a 0%, #1a2d55 100%);
-    padding: 25px 30px;
-    margin: -15mm -15mm 20px -15mm;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}}
-.header-left {{
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}}
-.crown {{
-    width: 45px;
-    height: 45px;
-    background: linear-gradient(180deg, #c5972c, #a67c1e);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-}}
-.header h1 {{
-    color: white;
-    font-size: 18px;
-    margin: 0;
-    font-weight: 700;
-}}
-.header .sovereign {{
-    color: #c5972c;
-    font-size: 8px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-top: 3px;
-}}
-.header .meta {{
-    text-align: right;
-    color: #8899bb;
-    font-size: 9px;
-    line-height: 1.6;
-}}
-.subtitle {{
-    font-size: 12px;
-    color: #666;
-    margin-bottom: 6px;
-}}
-.summary {{
-    background: #f5f2ec;
-    border: 1px solid #e0d8cc;
-    border-radius: 6px;
-    padding: 12px 16px;
-    margin-bottom: 16px;
-    display: flex;
-    gap: 40px;
-}}
-.summary-item {{
-    font-size: 9px;
-    color: #666;
-}}
-.summary-item strong {{
-    display: block;
-    font-size: 20px;
-    color: #0f1d3a;
-    margin-bottom: 2px;
-}}
-.summary-detail {{
-    font-size: 8px;
-    color: #888;
-    margin-top: 10px;
-    line-height: 1.5;
-}}
-table {{
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 8px;
-}}
-th {{
-    background: #0f1d3a;
-    color: #c5972c;
-    padding: 10px 12px;
-    text-align: left;
-    font-size: 9px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 600;
-}}
-th:first-child {{ border-radius: 4px 0 0 0; }}
-th:last-child {{ border-radius: 0 4px 0 0; }}
-</style>
-</head>
+<head><style>{CSS}</style></head>
 <body>
-    <div class="header">
-        <div class="header-left">
-            <div class="crown">👑</div>
-            <div>
-                <h1>{title}</h1>
-                <div class="sovereign">SOVEREIGN AUTHORITY OF THE ROYAL HOUSE OF KISSI™</div>
-            </div>
-        </div>
-        <div class="meta">
-            Kissi Kingdom Global Portfolio<br>
-            Generated: April 2026<br>
-            Classification: CONFIDENTIAL
-        </div>
-    </div>
+<h1><span class="crown">👑</span> SOVEREIGN AUTHORITY OF THE ROYAL HOUSE OF KISSI™</h1>
+<div class="subtitle">Global Real Estate Portfolio — {title}</div>
 
-    <p class="subtitle">{subtitle}</p>
+<div class="stats">
+    <div class="stat"><span class="stat-num">{len(props):,}</span><br><span class="stat-label">Properties</span></div>
+    <div class="stat"><span class="stat-num">{countries}</span><br><span class="stat-label">Countries</span></div>
+    <div class="stat"><span class="stat-num">{verified}</span><br><span class="stat-label">Verified</span></div>
+</div>
 
-    <div class="summary">
-        <div class="summary-item">
-            <strong>{len(properties)}</strong>
-            Properties Listed
-        </div>
-        <div class="summary-item">
-            <strong>{len(by_country)}</strong>
-            Countries
-        </div>
-        <div class="summary-item">
-            <strong>{len(by_type)}</strong>
-            Property Types
-        </div>
-        <div class="summary-detail">
-            <b>Countries:</b> {country_summary}<br>
-            <b>Types:</b> {type_summary}
-        </div>
-    </div>
+{f'<h2>{category_label}</h2>' if category_label else ''}
+{f'<p>{subtitle}</p>' if subtitle else ''}
 
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 25%;">Property</th>
-                <th style="width: 18%;">Location</th>
-                <th style="width: 12%;">Type</th>
-                <th style="width: 20%;">Details</th>
-                <th style="width: 13%;">Price</th>
-                <th style="width: 12%;">Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {rows}
-        </tbody>
-    </table>
+<table>
+<thead>
+<tr>
+    <th>#</th><th>Property Name</th><th>Type</th><th>Price</th><th>Country</th><th>City</th><th>State</th><th>Acreage</th><th>Broker</th><th>Email</th><th>Verified</th>
+</tr>
+</thead>
+<tbody>
+{make_table_rows(props)}
+</tbody>
+</table>
+
+<div class="footer">
+    CONFIDENTIAL — Kissi Kingdom Global Real Estate Portfolio | Timothy Daniel, Esq., Ohio Bar No. 18978 | kissikingdomoffice@gmail.com
+</div>
 </body>
 </html>"""
 
+def generate_pdf(filename, html_content):
+    path = os.path.join(PDF_DIR, filename)
+    try:
+        HTML(string=html_content).write_pdf(path)
+        size = os.path.getsize(path)
+        print(f"  ✓ {filename} ({size//1024}KB)")
+        return path
+    except Exception as e:
+        print(f"  ✗ {filename}: {e}")
+        return None
 
 def main():
-    print("Fetching properties from Convex...")
-    properties = get_properties()
-    print(f"Found {len(properties)} properties")
+    with open("/tmp/properties.json") as f:
+        all_props = json.load(f)
     
-    if not properties:
-        print("No properties found! Generating from seed data structure instead.")
-        return
+    print(f"Generating PDFs for {len(all_props)} properties...\n")
     
-    output_dir = "/work/viktor-spaces/kissi-kingdom-hub/tmp/pdfs"
-    os.makedirs(output_dir, exist_ok=True)
+    pdfs = []
     
-    # Group by category
-    by_category = defaultdict(list)
-    for p in properties:
-        by_category[p.get("category", "unknown")].append(p)
+    # 1. Master catalog
+    html = make_html("Complete Property Catalog", f"All {len(all_props):,} properties across all categories", all_props)
+    p = generate_pdf("00_Master_Property_Catalog.pdf", html)
+    if p: pdfs.append(p)
     
-    from weasyprint import HTML
+    # 2. By category
+    by_cat = {}
+    for prop in all_props:
+        cat = prop.get("category", "unknown")
+        by_cat.setdefault(cat, []).append(prop)
     
-    generated = []
+    for cat, props in sorted(by_cat.items()):
+        label = CATEGORY_LABELS.get(cat, cat.replace("_", " ").title())
+        safe_cat = cat.replace("/", "_").replace(" ", "_")
+        html = make_html(label, f"{len(props)} properties", props, label)
+        p = generate_pdf(f"01_Category_{safe_cat}.pdf", html)
+        if p: pdfs.append(p)
     
-    for cat_key, cat_props in sorted(by_category.items()):
-        cat_label = CATEGORY_LABELS.get(cat_key, cat_key.replace("_", " ").title())
-        
-        # Group within category by country
-        by_country = defaultdict(list)
-        for p in cat_props:
-            by_country[p.get("country", "Unknown")].append(p)
-        
-        # Generate main category PDF
-        filename = f"{cat_key}_all.pdf"
-        filepath = os.path.join(output_dir, filename)
-        subtitle = f"Complete listing of all {cat_label} properties across {len(by_country)} countries"
-        html_str = generate_html(cat_label, subtitle, cat_props)
-        HTML(string=html_str).write_pdf(filepath)
-        generated.append((cat_label, filename, len(cat_props)))
-        print(f"  ✓ {filename} — {len(cat_props)} properties")
-        
-        # Generate per-country PDFs within category (only if multiple countries)
-        if len(by_country) > 1:
-            for country, country_props in sorted(by_country.items()):
-                safe_country = country.replace(" ", "_").lower()
-                filename = f"{cat_key}_{safe_country}.pdf"
-                filepath = os.path.join(output_dir, filename)
-                subtitle = f"{cat_label} — {country} ({len(country_props)} properties)"
-                html_str = generate_html(f"{cat_label}: {country}", subtitle, country_props)
-                HTML(string=html_str).write_pdf(filepath)
-                print(f"    ✓ {filename} — {len(country_props)} properties")
+    # 3. By country (for countries with 10+ properties)
+    by_country = {}
+    for prop in all_props:
+        country = prop.get("country", "Unknown")
+        by_country.setdefault(country, []).append(prop)
     
-    print(f"\n✅ Generated {len(os.listdir(output_dir))} PDFs in {output_dir}")
+    for country, props in sorted(by_country.items()):
+        if len(props) >= 5:
+            safe = country.replace(" ", "_").replace("/", "_")[:30]
+            html = make_html(f"Properties in {country}", f"{len(props)} properties", props)
+            p = generate_pdf(f"02_Country_{safe}.pdf", html)
+            if p: pdfs.append(p)
     
-    # Generate master catalog
-    filename = "master_portfolio_catalog.pdf"
-    filepath = os.path.join(output_dir, filename)
-    subtitle = f"Complete Kissi Kingdom portfolio — {len(properties)} properties across all categories"
-    html_str = generate_html("Master Portfolio Catalog", subtitle, properties)
-    HTML(string=html_str).write_pdf(filepath)
-    print(f"  ✓ {filename} — {len(properties)} properties (MASTER)")
-
+    # 4. By property type
+    by_type = {}
+    for prop in all_props:
+        ptype = prop.get("propertyType", "Unknown")
+        by_type.setdefault(ptype, []).append(prop)
+    
+    for ptype, props in sorted(by_type.items()):
+        if len(props) >= 5:
+            safe = ptype.replace(" ", "_").replace("/", "_")[:30]
+            html = make_html(f"{ptype.title()} Properties", f"{len(props)} properties", props)
+            p = generate_pdf(f"03_Type_{safe}.pdf", html)
+            if p: pdfs.append(p)
+    
+    print(f"\n✅ Generated {len(pdfs)} PDFs in {PDF_DIR}")
+    
+    # Save list for upload
+    with open("/tmp/pdf_list.json", "w") as f:
+        json.dump(pdfs, f)
 
 if __name__ == "__main__":
     main()

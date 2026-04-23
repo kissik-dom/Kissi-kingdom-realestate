@@ -40,8 +40,8 @@ export function BrokerPortalPage() {
 	};
 
 	return (
-		<div className="flex-1 flex flex-col overflow-hidden">
-			<section className="kissi-gradient text-white flex-1 flex flex-col items-center justify-center py-16 px-4 min-h-[80vh]">
+		<div className="flex-1 flex flex-col overflow-hidden min-h-screen kissi-gradient">
+			<section className="text-white flex-1 flex flex-col items-center justify-center py-16 px-4">
 				<div className="max-w-md w-full">
 					<Link
 						to="/"
