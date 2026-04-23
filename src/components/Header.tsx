@@ -10,14 +10,11 @@ export function Header() {
 	const isAuthPage =
 		location.pathname === "/login" || location.pathname === "/signup";
 
-	// Hide header on landing page (it has its own hero/nav), broker portal, and browse
-	const hideHeader = ["/", "/broker-portal", "/browse"].includes(
-		location.pathname,
-	);
-	if (hideHeader) return null;
+	// Only hide on auth pages
+	if (isAuthPage) return null;
 
 	return (
-		<header className="sticky top-0 z-50 border-b border-[#e0d8cc] bg-[#0f1d3a]/95 backdrop-blur-md">
+		<header className="sticky top-0 z-50 border-b border-[#1e3460] bg-[#0f1d3a]/95 backdrop-blur-md">
 			<div className="container">
 				<div className="flex h-14 items-center justify-between">
 					<Link
