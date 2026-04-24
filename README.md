@@ -701,3 +701,4 @@ const cache: Record<Id<"users">, string> = {};
 | Union    | `v.union(v.string(), v.null())`    | `"hi"` or `null`      |
 | Literal  | `v.literal("admin")`               | `"admin"`             |
 | Record   | `v.record(v.string(), v.number())` | `{ a: 1, b: 2 }`      |
+<!-- Deploy trigger: 2026-04-24T13:39:44Z -->
