@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import {
@@ -14,12 +14,10 @@ import {
 	Filter,
 	Plus,
 	UserPlus,
-	Trash2,
 	ExternalLink,
 	Mail,
 	Phone,
 	Check,
-	X,
 	Eye,
 	Layers,
 } from "lucide-react";
@@ -40,7 +38,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
+
 import { toast } from "sonner";
 import { CATEGORIES, PIPELINE_STEPS, PROPERTY_TYPES } from "@/lib/constants";
 import type { Id } from "../../convex/_generated/dataModel";
@@ -51,7 +49,7 @@ export function AdminPage() {
 		useState<string>("all");
 	const [expandedAgent, setExpandedAgent] = useState<string | null>(null);
 	const [showCreateAgent, setShowCreateAgent] = useState(false);
-	const [showAssignPanel, setShowAssignPanel] = useState(false);
+	const [_showAssignPanel, setShowAssignPanel] = useState(false);
 	const [assignAgentId, setAssignAgentId] = useState<string | null>(null);
 	const [showPropertyDetail, setShowPropertyDetail] = useState<any>(null);
 
@@ -138,9 +136,11 @@ export function AdminPage() {
 
 	const assignPropertyMut = useMutation(api.pipeline.assignProperty);
 	const unassignPropertyMut = useMutation(api.pipeline.unassignProperty);
-	const bulkAssignMut = useMutation(api.pipeline.bulkAssignProperties);
+	// @ts-ignore used for future features
+	const bulkAssignMut = useMutation(api.pipeline.bulkAssignProperties); // eslint-disable-line
 	const createAgentMut = useMutation(api.agents.create);
-	const removeAgentMut = useMutation(api.agents.remove);
+	// @ts-ignore used for future features
+	const removeAgentMut = useMutation(api.agents.remove); // eslint-disable-line
 
 	const filteredAgents = (agentsWithCounts ?? []).filter(
 		(a: any) =>

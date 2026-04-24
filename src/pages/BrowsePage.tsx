@@ -15,7 +15,6 @@ import {
 	Users,
 	Building,
 	Lock,
-	Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,7 +32,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { CATEGORIES, PROPERTY_TYPES, ADMIN_ACCESS_CODE } from "@/lib/constants";
+import { CATEGORIES, PROPERTY_TYPES } from "@/lib/constants";
 import type { Id } from "../../convex/_generated/dataModel";
 
 export function BrowsePage() {
