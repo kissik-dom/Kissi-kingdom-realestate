@@ -21,9 +21,11 @@ export function Header() {
 						to="/"
 						className="flex items-center gap-2 font-semibold text-sm hover:opacity-80 transition-opacity text-white"
 					>
-						<div className="w-8 h-8 rounded-full bg-gradient-to-b from-[#c5972c] to-[#a67c1e] flex items-center justify-center">
-							<span className="text-sm">👑</span>
-						</div>
+						<img
+							src="/royal-seal.png"
+							alt="Royal Seal"
+							className="w-8 h-8 object-contain"
+						/>
 						<span className="hidden sm:inline tracking-wide">
 							KISSI KINGDOM
 						</span>

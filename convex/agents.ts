@@ -52,10 +52,37 @@ export const get = query({
 });
 
 // Verify broker access code — returns agent info + role
+// Master admin code 999999 always works (returns admin even if DB is empty)
 export const verifyAccessCode = query({
 	args: { code: v.string() },
 	returns: v.any(),
 	handler: async (ctx, args) => {
+		// Master admin override — always grants admin access
+		if (args.code === "999999") {
+			// Try to find existing admin first
+			const admin = await ctx.db
+				.query("agents")
+				.withIndex("by_role", (q) => q.eq("role", "admin"))
+				.first();
+			if (admin) {
+				return {
+					agentId: admin._id,
+					name: admin.name,
+					email: admin.email,
+					role: "admin",
+					isActive: true,
+				};
+			}
+			// Return synthetic admin if DB is empty
+			return {
+				agentId: "master",
+				name: "Yumba Kamanda",
+				email: "admin@kissikingdom.com",
+				role: "admin",
+				isActive: true,
+			};
+		}
+
 		const agent = await ctx.db
 			.query("agents")
 			.withIndex("by_accessCode", (q) => q.eq("accessCode", args.code))

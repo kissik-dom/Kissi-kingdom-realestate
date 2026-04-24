@@ -141,6 +141,25 @@ export function AdminPage() {
 	const createAgentMut = useMutation(api.agents.create);
 	// @ts-ignore used for future features
 	const removeAgentMut = useMutation(api.agents.remove); // eslint-disable-line
+	const seedDatabaseMut = useMutation(api.seed.seedDatabase);
+	const [isSeeding, setIsSeeding] = useState(false);
+
+	const handleSeedDatabase = async () => {
+		setIsSeeding(true);
+		try {
+			const result = await seedDatabaseMut({});
+			if (result?.status === "already_seeded") {
+				toast.info(`Database already seeded: ${result.agents} agents, ${result.properties} properties`);
+			} else {
+				toast.success(`Database seeded: ${result?.agents} agents, ${result?.properties} properties`);
+			}
+		} catch (err) {
+			toast.error("Failed to seed database");
+			console.error(err);
+		} finally {
+			setIsSeeding(false);
+		}
+	};
 
 	const filteredAgents = (agentsWithCounts ?? []).filter(
 		(a: any) =>
@@ -201,14 +220,25 @@ export function AdminPage() {
 	return (
 		<div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
 			{/* Header */}
-			<div>
-				<h1 className="text-2xl font-bold text-[#0f1d3a]">
-					Admin Command Center
-				</h1>
-				<p className="text-sm text-gray-500 mt-1">
-					Full oversight of all agents, properties, and pipeline
-					activity
-				</p>
+			<div className="flex items-center justify-between">
+				<div>
+					<h1 className="text-2xl font-bold text-[#0f1d3a]">
+						Admin Command Center
+					</h1>
+					<p className="text-sm text-gray-500 mt-1">
+						Full oversight of all agents, properties, and pipeline
+						activity
+					</p>
+				</div>
+				{(agentStats?.totalAgents ?? 0) === 0 && (
+					<Button
+						onClick={handleSeedDatabase}
+						disabled={isSeeding}
+						className="bg-[#c5972c] hover:bg-[#d4a94a] text-white"
+					>
+						{isSeeding ? "Seeding..." : "Initialize Database"}
+					</Button>
+				)}
 			</div>
 
 			{/* Overview Stats */}

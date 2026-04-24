@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { internalMutation } from "./_generated/server";
+import { internalMutation, mutation } from "./_generated/server";
 
 // Generate a 6-digit access code
 function genCode(index: number): string {
@@ -381,5 +381,130 @@ export const seedAll = internalMutation({
 
 		console.log(`Seeded: 1 admin + 100 agents, ${propertyIds.length} properties`);
 		return null;
+	},
+});
+
+// Public mutation to seed the database — callable from admin UI
+export const seedDatabase = mutation({
+	args: {},
+	returns: v.any(),
+	handler: async (ctx) => {
+		// Check if already seeded
+		const existing = await ctx.db.query("agents").first();
+		if (existing) {
+			const agentCount = (await ctx.db.query("agents").collect()).length;
+			const propCount = (await ctx.db.query("properties").collect()).length;
+			return { status: "already_seeded", agents: agentCount, properties: propCount };
+		}
+
+		// 1. Create 100 agents + 1 admin
+		const agentIds = [];
+		const adminId = await ctx.db.insert("agents", {
+			name: "Yumba Kamanda",
+			email: "admin@kissikingdom.com",
+			phone: "+1-000-000-0001",
+			accessCode: "000001",
+			isActive: true,
+			role: "admin",
+			avatarInitials: "YK",
+		});
+		agentIds.push(adminId);
+
+		for (let i = 0; i < 100; i++) {
+			const firstName = FIRST_NAMES[i % FIRST_NAMES.length];
+			const lastName = LAST_NAMES[i % LAST_NAMES.length];
+			const code = genCode(i + 2);
+			const id = await ctx.db.insert("agents", {
+				name: `${firstName} ${lastName}`,
+				email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@kissikingdom.com`,
+				phone: `+1-555-${String(1000 + i).slice(0, 3)}-${String(1000 + i).slice(1, 5)}`,
+				accessCode: code,
+				isActive: true,
+				role: "agent",
+				avatarInitials: `${firstName[0]}${lastName[0]}`,
+			});
+			agentIds.push(id);
+		}
+
+		// 2. Create properties across all categories
+		const categories = Object.keys(PROPERTY_TEMPLATES) as (keyof typeof PROPERTY_TEMPLATES)[];
+		const propertyIds = [];
+
+		for (const cat of categories) {
+			const tmpl = PROPERTY_TEMPLATES[cat];
+			const count = cat === "arenas" ? 10 : 25;
+
+			for (let i = 0; i < count; i++) {
+				const loc = randomFrom(tmpl.cities);
+				const sub = randomFrom(tmpl.subcategories);
+				const broker = randomFrom(BROKERS);
+				const price = randomBetween(tmpl.priceRange[0], tmpl.priceRange[1]);
+				const acreage = cat.includes("farm") || cat === "nba_nfl_land" ? randomBetween(1000, 60000) : undefined;
+				const stories = cat === "nyc_commercial" ? randomBetween(5, 60) : undefined;
+
+				const locState = "state" in loc ? (loc as any).state as string : "";
+				let title = randomFrom(tmpl.titles)
+					.replace("{sub}", sub)
+					.replace("{city}", loc.city)
+					.replace("{country}", loc.country)
+					.replace("{state}", locState || "")
+					.replace("{acreage}", String(acreage || ""))
+					.replace("{stories}", String(stories || ""));
+
+				const id = await ctx.db.insert("properties", {
+					title,
+					description: `Premium ${tmpl.propertyType} property in ${loc.city}, ${loc.country}. ${sub} category. Contact broker for full details and private viewing.`,
+					price,
+					priceLabel: price > 10000000 ? `$${(price / 1000000).toFixed(1)}M` : `$${(price / 1000).toFixed(0)}K`,
+					currency: "USD",
+					country: loc.country,
+					city: loc.city,
+					state: "state" in loc ? (loc as any).state as string : undefined,
+					category: cat,
+					propertyType: tmpl.propertyType,
+					subcategory: sub,
+					acreage,
+					stories,
+					parcels: cat === "ivy_league" || cat === "hbcu" ? randomBetween(2, 4) : undefined,
+					imageUrl: `https://images.unsplash.com/photo-${1560518883 + i}?w=800&h=600`,
+					listingUrl: `https://example.com/listing/${cat}-${i}`,
+					brokerName: broker.name,
+					brokerEmail: broker.email,
+					brokerPhone: broker.phone,
+					brokerCompany: broker.name,
+					status: randomFrom(STATUSES),
+					isVerified: Math.random() > 0.3,
+				});
+				propertyIds.push(id);
+			}
+		}
+
+		// 3. Assign properties to agents
+		for (let i = 1; i <= 100; i++) {
+			const agentId = agentIds[i];
+			const numProps = randomBetween(2, 6);
+			for (let j = 0; j < numProps; j++) {
+				const propId = randomFrom(propertyIds);
+				const status = randomFrom(PIPELINE_STATUSES);
+				await ctx.db.insert("agentProperties", {
+					agentId,
+					propertyId: propId,
+					assignedAt: Date.now() - randomBetween(0, 30 * 24 * 60 * 60 * 1000),
+					pipelineStatus: status,
+				});
+			}
+		}
+
+		// 4. Create broker access codes
+		for (let i = 0; i < 100; i++) {
+			await ctx.db.insert("brokerAccessCodes", {
+				code: genCode(i + 2),
+				agentId: agentIds[i + 1],
+				isUsed: false,
+				createdAt: Date.now(),
+			});
+		}
+
+		return { status: "seeded", agents: 101, properties: propertyIds.length };
 	},
 });

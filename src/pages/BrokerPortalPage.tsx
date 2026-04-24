@@ -58,11 +58,13 @@ export function BrokerPortalPage() {
 						Back to Home
 					</Link>
 
-					{/* Crest */}
+					{/* Royal Seal */}
 					<div className="flex justify-start mb-6">
-						<div className="w-14 h-14 rounded-full bg-gradient-to-b from-[#c5972c] to-[#a67c1e] flex items-center justify-center">
-							<span className="text-2xl">👑</span>
-						</div>
+						<img
+							src="/royal-seal.png"
+							alt="Royal Seal"
+							className="w-16 h-16 object-contain drop-shadow-lg"
+						/>
 					</div>
 
 					<h1 className="text-3xl font-bold mb-2">Broker Portal</h1>
