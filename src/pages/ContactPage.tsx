@@ -31,8 +31,8 @@ export function ContactPage() {
 						{
 							icon: <Mail className="size-6 text-[#c5972c]" />,
 							title: "Email",
-							detail: "kissikingdomoffice@gmail.com",
-							link: "mailto:kissikingdomoffice@gmail.com",
+							detail: "legal@kissikingdom.com",
+							link: "mailto:legal@kissikingdom.com",
 						},
 						{
 							icon: <Building className="size-6 text-[#c5972c]" />,

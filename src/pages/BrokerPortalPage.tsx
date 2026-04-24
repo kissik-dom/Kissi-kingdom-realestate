@@ -119,10 +119,10 @@ export function BrokerPortalPage() {
 						Access codes are issued by the Kissi Kingdom office. For
 						inquiries:{" "}
 						<a
-							href="mailto:kissikingdomoffice@gmail.com"
+							href="mailto:legal@kissikingdom.com"
 							className="text-[#c5972c] hover:underline"
 						>
-							kissikingdomoffice@gmail.com
+							legal@kissikingdom.com
 						</a>
 					</p>
 				</div>

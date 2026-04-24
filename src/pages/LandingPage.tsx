@@ -175,7 +175,7 @@ export function LandingPage() {
 					<div className="flex flex-wrap justify-center gap-8 pt-4">
 						<div className="flex items-center gap-3">
 							<Mail className="size-5 text-[#c5972c]" />
-							<span className="text-sm">kissikingdomoffice@gmail.com</span>
+							<span className="text-sm">legal@kissikingdom.com</span>
 						</div>
 						<div className="flex items-center gap-3">
 							<Building className="size-5 text-[#c5972c]" />
